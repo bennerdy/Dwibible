@@ -1,0 +1,6 @@
+{
+  "name": "Dwibible",
+  "description": "100% offline bilingual (Bahasa Melayu & English KJV/NKJV) Bible app with split-screen reading, smart search, bookmarks, and study notes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

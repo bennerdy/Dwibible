@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Dwibible - Offline Bilingual Bible</title>
+  
+  <!-- iOS PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dwibible">
+  <meta name="theme-color" content="#1A202C">
+  
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div style="display:flex; align-items:center; gap:6px;">
+      <button class="btn-icon" id="btn-back" title="Reset to Genesis 1">←</button>
+      <button class="btn-icon" id="btn-daily-verse" title="Daily Verse">☀️</button>
+      <button class="badge-btn" id="btn-quiz">Quiz</button>
+    </div>
+
+    <div class="brand">
+      <span class="brand-icon">📖</span>
+      <span>Dwibible</span>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:6px;">
+      <button class="btn-icon" id="btn-bookmarks" title="Bookmarks & Notes">🔖</button>
+      <button class="btn-icon" id="btn-profile" title="Profile & Settings">👤</button>
+    </div>
+  </header>
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-title">SEARCH VERSE</div>
+    <div class="search-bar">
+      <span>🔍</span>
+      <input type="text" id="search-input" placeholder="Search: e.g., Genesis 1:1, Mazmur 23:1">
+      <button id="search-clear" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">✕</button>
+    </div>
+  </div>
+
+  <!-- Toolbar Controls -->
+  <div class="toolbar">
+    <span class="column-emblem">BM</span>
+    <div class="toolbar-controls">
+      <button class="toolbar-btn" id="font-decrease">A-</button>
+      <span id="font-size-label" style="color:var(--blue); font-weight:bold;">15px</span>
+      <button class="toolbar-btn" id="font-increase">A+</button>
+      <span style="color:var(--card-border);">|</span>
+      <button class="toolbar-btn" id="theme-toggle">🌙 Mode</button>
+      <span style="color:var(--card-border);">|</span>
+      <button class="toolbar-btn" id="layout-toggle">⊟ Split</button>
+    </div>
+    <span class="column-emblem">EN</span>
+  </div>
+
+  <!-- Main Content: Side-by-Side Reader -->
+  <main class="reader-container" id="reader-container">
+    <!-- Left Pane: BM Version -->
+    <section class="reader-pane" id="pane-bm">
+      <div class="pane-header">
+        <span>BM VERSION</span>
+      </div>
+      <div class="verses-scroll" id="bm-verses-list"></div>
+    </section>
+
+    <!-- Right Pane: English Version (NKJV / KJV) -->
+    <section class="reader-pane" id="pane-en">
+      <div class="pane-header" id="en-version-trigger">
+        <span id="en-version-label">New King James Version (NKJV)</span>
+        <span class="triangle-down"></span>
+      </div>
+      <div class="verses-scroll" id="en-verses-list"></div>
+    </section>
+  </main>
+
+  <!-- Bottom Navigation: Book & Chapter Pickers -->
+  <footer class="footer-nav">
+    <div class="nav-buttons">
+      <button class="nav-btn" id="btn-select-book">
+        <span>📖</span>
+        <span id="current-book-label">Book: Genesis</span>
+      </button>
+      <button class="nav-btn" id="btn-select-chapter">
+        <span>🔢</span>
+        <span id="current-chapter-label">Chapter: 1</span>
+      </button>
+    </div>
+    <div class="status-footer">App by Rikko | KJV/NKJV | 100% Offline Mode</div>
+  </footer>
+
+  <!-- Modal: Verse Study & 3-Version Side-by-Side Compare -->
+  <div class="modal-overlay" id="modal-verse-study">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h3 id="study-verse-title" style="color:var(--gold);">Genesis 1:1</h3>
+          <p style="font-size:11px; color:var(--text-muted);">Quick Verse Comparison • Highlight & Personal Note</p>
+        </div>
+        <button class="btn-icon" id="close-study-modal">✕</button>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-col">
+          <h4 style="color:var(--blue);">MALAY (BM)</h4>
+          <p id="compare-text-bm" style="line-height:1.4;"></p>
+        </div>
+        <div class="compare-col">
+          <h4 style="color:var(--gold);">ENGLISH (KJV)</h4>
+          <p id="compare-text-kjv" style="line-height:1.4;"></p>
+        </div>
+        <div class="compare-col">
+          <h4 style="color:var(--red);">ENGLISH (NKJV)</h4>
+          <p id="compare-text-nkjv" style="line-height:1.4;"></p>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label style="font-size:11px; font-weight:bold; color:var(--text-muted);">COLOR-CODED HIGHLIGHT</label>
+        <div class="highlight-chips" id="highlight-selector">
+          <button class="chip active" data-color="NONE">None</button>
+          <button class="chip" data-color="GOLD" style="color:#FACC15;">Yellow</button>
+          <button class="chip" data-color="EMERALD" style="color:#22C55E;">Green</button>
+          <button class="chip" data-color="BLUE" style="color:#38BDF8;">Blue</button>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;">
+        <label style="font-size:11px; font-weight:bold; color:var(--text-muted);">PERSONAL STUDY NOTE</label>
+        <textarea id="study-note-input" rows="3" style="width:100%; margin-top:4px; padding:8px; border-radius:8px; background:var(--popup-bg); border:1px solid var(--card-border); color:var(--text-main); font-family:inherit;"></textarea>
+      </div>
+
+      <button id="btn-save-study" style="width:100%; margin-top:12px; padding:12px; background:var(--blue); color:#12161F; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">Save Offline to Device</button>
+    </div>
+  </div>
+
+  <!-- Modal: Offline Daily Verse -->
+  <div class="modal-overlay" id="modal-daily-verse">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h3>Daily Verse</h3>
+          <p style="font-size:11px; color:var(--text-muted);">Calculated 100% Offline based on Device Local Date</p>
+        </div>
+        <button class="btn-icon" id="close-daily-modal">✕</button>
+      </div>
+
+      <div style="background:var(--popup-bg); border-radius:10px; padding:10px; margin:12px 0; border:1px solid var(--card-border);">
+        <h4 id="daily-ref" style="color:var(--gold); margin-bottom:4px;">Deuteronomy 33:13</h4>
+        <div style="margin-bottom:8px;">
+          <small style="color:var(--blue); font-weight:bold;">BAHASA MELAYU (BM)</small>
+          <p id="daily-text-bm" style="margin-top:2px; line-height:1.4;"></p>
+        </div>
+        <div>
+          <small style="color:var(--red); font-weight:bold;">NEW KING JAMES VERSION (NKJV)</small>
+          <p id="daily-text-en" style="margin-top:2px; line-height:1.4;"></p>
+        </div>
+      </div>
+
+      <button id="btn-close-daily" style="width:100%; padding:10px; background:var(--blue); color:#12161F; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">Close</button>
+    </div>
+  </div>
+
+  <!-- Modal: Offline Bible Mini-Quiz (Trivia) -->
+  <div class="modal-overlay" id="modal-quiz">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h3>Offline Bible Mini-Quiz</h3>
+          <p style="font-size:11px; color:var(--text-muted);">100% Offline Trivia • Score: <span id="quiz-score">0</span></p>
+        </div>
+        <button class="btn-icon" id="close-quiz-modal">✕</button>
+      </div>
+
+      <div style="background:var(--popup-bg); border-radius:10px; padding:10px; margin:12px 0; border:1px solid var(--card-border);">
+        <p id="quiz-prompt" style="font-weight:bold; margin-bottom:8px;">Which Bible Book & Chapter contains this verse?</p>
+        <p id="quiz-clue" style="font-style:italic; line-height:1.4; color:var(--text-main);"></p>
+      </div>
+
+      <div id="quiz-options" style="display:flex; flex-direction:column; gap:8px;"></div>
+
+      <div id="quiz-feedback" style="margin-top:10px; font-weight:bold; display:none;"></div>
+      <button id="btn-next-quiz" style="width:100%; margin-top:10px; padding:10px; background:var(--blue); color:#12161F; font-weight:bold; border:none; border-radius:8px; cursor:pointer; display:none;">Next Question</button>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "summary":  "Implementation plan for Dwibible, a 100% offline bilingual (Bahasa Melayu & English KJV/NKJV) Bible Android application built with Jetpack Compose and Room SQLite database, featuring a dark low-light split-screen UI, instant verse/keyword search, font size controls, full 66-book navigation, and verse bookmarks/notes.",
+  "updatedAt":  "2026-10-28T10:59:50.765690475Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}
